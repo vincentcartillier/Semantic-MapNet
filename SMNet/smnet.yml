@@ -1,0 +1,30 @@
+name_experiment: gru_every4_enc_smallmem
+model:
+    arch: smnet
+    finetune: False
+    n_obj_classes: 13
+    ego_feature_dim: 512
+    mem_feature_dim: 128
+    mem_update: gru
+    ego_downsample: True
+data:
+    train_split: train
+    val_split: val
+    root: /srv/testing/vcartillier3/SMNet/
+    ego_downsample: True 
+    feature_type: encoder 
+training:
+    train_epoch: 200
+    batch_size: 8
+    n_workers: 2
+    print_interval: 20
+    optimizer:
+        lr: 1.0e-4
+        momentum: 0.9
+        weight_decay: 4.0e-4
+    scheduler:
+        lr_decay_rate: 0.8
+        lr_epoch_per_decay: 30
+    resume:
+    load_model:
+seed: 9876
