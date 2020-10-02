@@ -1,12 +1,11 @@
 # Semantic-MapNet
 
 code for the paper:
-**[SMNet][1]**
+**Semantic MapNet: Building Allocentric Semantic Maps and Representations from Egocentric Views**
 Vincent Cartillier, Zhile Ren, Neha Jain, Stefan Lee, Irfan Essa, Dhruv Batra
 
 
-website:
-[semantic-mapnet.com][2]
+website: https://vincentcartillier.github.io/smnet.html
 
 
 ## Data
@@ -21,8 +20,4 @@ website:
 
 ## Pre-trained models
  * pretrained models will be made available soon!
-
-[1]: Semantic MapNet: Building Allocentric Semantic Maps and Representations from Egocentric Views
-[2]: https://vincentcartillier.github.io/smnet.html
-
 
