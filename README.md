@@ -6,7 +6,7 @@ Vincent Cartillier, Zhile Ren, Neha Jain, Stefan Lee, Irfan Essa, Dhruv Batra
 
 
 website:
-[semantic-mapnet.com][1]
+[semantic-mapnet.com][2]
 
 
 ## Data
