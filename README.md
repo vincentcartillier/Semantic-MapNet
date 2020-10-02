@@ -13,7 +13,7 @@ website:
  * ```data/paths.json``` has all the manually recorded trajectories.
  * The semantic meshes with cleaned floor labels will be made available soon.
 
-##Workflow
+## Workflow
  * Build training data by running ```make_data/build_training_data_all_features.py``` and ```make_data/build_test_data_projection.py```
  * To train SMNet you can run ```train.py```
  * To evaluate SMNet you can run ```test.py```
