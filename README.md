@@ -2,7 +2,7 @@
 
 Code for the paper:
 
-**[Semantic MapNet: Building Allocentric Semantic Maps and Representations from Egocentric Views][1]**
+**[Semantic MapNet: Building Allocentric Semantic Maps and Representations from Egocentric Views][1]**  
 *Vincent Cartillier, Zhile Ren, Neha Jain, Stefan Lee, Irfan Essa, Dhruv Batra*
 
 
