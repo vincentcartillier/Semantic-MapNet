@@ -1,12 +1,14 @@
 # Semantic-MapNet
 
 code for the paper:
-**Semantic MapNet: Building Allocentric Semantic Maps and Representations from Egocentric Views**
+
+**[Semantic MapNet: Building Allocentric Semantic Maps and Representations from Egocentric Views][1]**
+
 Vincent Cartillier, Zhile Ren, Neha Jain, Stefan Lee, Irfan Essa, Dhruv Batra
 
 
-website: https://vincentcartillier.github.io/smnet.html
-
+website:
+[smnet.com][2]
 
 ## Data
  * ```data/paths.json``` has all the manually recorded trajectories.
@@ -21,3 +23,10 @@ website: https://vincentcartillier.github.io/smnet.html
 ## Pre-trained models
  * pretrained models will be made available soon!
 
+
+
+## License
+BDS
+
+[1]: https://arxiv.org/abs/2010.01191
+[2]: https://vincentcartillier.github.io/smnet.html
