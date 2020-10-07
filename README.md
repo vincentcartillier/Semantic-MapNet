@@ -1,14 +1,13 @@
 # Semantic-MapNet
 
-code for the paper:
+Code for the paper:
 
 **[Semantic MapNet: Building Allocentric Semantic Maps and Representations from Egocentric Views][1]**
+*Vincent Cartillier, Zhile Ren, Neha Jain, Stefan Lee, Irfan Essa, Dhruv Batra*
 
-Vincent Cartillier, Zhile Ren, Neha Jain, Stefan Lee, Irfan Essa, Dhruv Batra
 
+Website: [smnet.com][2]
 
-website:
-[smnet.com][2]
 
 ## Data
  * ```data/paths.json``` has all the manually recorded trajectories.
