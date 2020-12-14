@@ -23,7 +23,7 @@ Website: [smnet.com][2]
 
 
 ## Pre-trained models
- * pretrained are available here: https://gatech.box.com/s/ap64y9iqxuuwk6fiyd82i3c0ya2w2hah
+ * pretrained weights are available here: https://gatech.box.com/s/ap64y9iqxuuwk6fiyd82i3c0ya2w2hah
 
 
 
