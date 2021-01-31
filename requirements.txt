@@ -1,0 +1,11 @@
+numpy
+h5py
+imageio
+matplotlib
+numpy-quaternion==2020.11.2.17.0.49
+opencv-python==4.4.0.46
+pillow==8.0.1
+scipy==1.5.4
+torch==1.7.0
+torch-scatter==1.4.0
+torchvision==0.8.1
