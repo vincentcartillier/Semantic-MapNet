@@ -39,8 +39,8 @@ run the following script for demo:
  * Precompute testing features and projections indices for the full tours in the test set:
 
 
-    python precompute_test_inputs/build_test_data.py
-    python precompute_test_inputs/build_test_data_features.py
+        python precompute_test_inputs/build_test_data.py
+        python precompute_test_inputs/build_test_data_features.py
 
 
  * To evaluate SMNet you can run ```test.py```
