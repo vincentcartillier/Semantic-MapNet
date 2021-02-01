@@ -38,8 +38,10 @@ run the following script for demo:
  * To train SMNet you can run ```train.py```
  * Precompute testing features and projections indices for the full tours in the test set:
 
+
     python precompute_test_inputs/build_test_data.py
     python precompute_test_inputs/build_test_data_features.py
+
 
  * To evaluate SMNet you can run ```test.py```
 
