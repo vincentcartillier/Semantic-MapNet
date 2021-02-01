@@ -1,18 +1,18 @@
-name_experiment: gru_every4_enc_smallmem
+name_experiment: gru_fullrez_lastlayer_m256
 model:
     arch: smnet
     finetune: False
     n_obj_classes: 13
-    ego_feature_dim: 512
-    mem_feature_dim: 128
+    ego_feature_dim: 64
+    mem_feature_dim: 256
     mem_update: gru
-    ego_downsample: True
+    ego_downsample: False
 data:
     train_split: train
     val_split: val
-    root: /srv/testing/vcartillier3/SMNet/
-    ego_downsample: True 
-    feature_type: encoder 
+    root: data/training/
+    ego_downsample: Fase
+    feature_type: lastlayer
 training:
     train_epoch: 200
     batch_size: 8

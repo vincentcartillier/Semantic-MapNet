@@ -19,7 +19,7 @@ from torch.utils.data import DistributedSampler
 from SMNet.loader import SMNetLoader
 from SMNet.model import SMNet
 from SMNet.loss import SemmapLoss
-from metric.metrics import averageMeter
+from metric import averageMeter
 from metric.iou import IoU
 from SMNet.smnet_utils import get_logger
 
