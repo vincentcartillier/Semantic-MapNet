@@ -9,44 +9,40 @@ from pathlib import Path
 
 from SMNet.model_test import SMNet
 
+from utils import convert_weights_cuda_cpu
+
 split = 'test'
 
 data_dir = 'data/test_data/'
-expe_dir = 'runs/gru_fullrez_lastlayer_m256/83887'
-symlink_dir = 'OUTPUTS/fullrez/SMNet_gru_lastlayer_m256'
-
-output_dir = os.path.join(expe_dir, 'semmap')
-Path(output_dir).mkdir(parents=True, exist_ok=True)
-
-try:
-    Path(symlink_dir).mkdir(parents=True, exist_ok=True)
-    os.symlink(os.path.join(str(Path.home()), 'SMNet/SMNet/', output_dir),
-               os.path.join(symlink_dir,'semmap'))
-except:
-    print('symlink to OUTPUTS already created')
+output_dir = 'data/outputs/semmap/'
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-# -- load configs
-with open(os.path.join(expe_dir, 'smnet.yml')) as fp:
-    cfg = yaml.load(fp)
-
-
 # -- create model
-model_path = os.path.join(expe_dir, 'smnet_mp3d_best_model.pkl')
-model = SMNet(cfg['model'], device)
+cfg_model = {
+    'arch': 'smnet',
+    'finetune': False,
+    'n_obj_classes': 13,
+    'ego_feature_dim': 64,
+    'mem_feature_dim': 256,
+    'mem_update': 'gru',
+    'ego_downsample': False,
+}
+model_path = 'smnet_mp3d_best_model.pkl'
+model = SMNet(cfg_model, device)
 model = model.to(device)
 
 print('Loading pre-trained weights: ', model_path)
 state = torch.load(model_path)
 model_state = state['model_state']
+model_state = convert_weights_cuda_cpu(model_state, 'cpu')
 model.load_state_dict(model_state)
 model.eval()
 
 
 # -- load JSONS and select envs
-info = json.load(open('data/GT/semmap_GT_info.json','r'))
+info = json.load(open('data/semmap_GT_info.json','r'))
 paths = json.load(open('data/paths.json', 'r'))
 envs_splits = json.load(open('data/envs_splits.json', 'r'))
 envs = envs_splits['{}_envs'.format(split)]
@@ -73,33 +69,10 @@ with torch.no_grad():
         h5file.close()
 
         h5file = h5py.File(os.path.join(data_dir, 'features', env+'.h5'), 'r')
-        if cfg['data']['feature_type'] == 'encoder':
-            features = np.array(h5file['features_encoder'], dtype=np.float32)
-        elif cfg['data']['feature_type'] == 'lastlayer':
-            features = np.array(h5file['features_lastlayer'], dtype=np.float32)
-        elif cfg['data']['feature_type'] == 'scores':
-            features = np.array(h5file['features_scores'], dtype=np.float32)
-        elif cfg['data']['feature_type'] == 'softmax':
-            features = np.array(h5file['features_scores'], dtype=np.float32)
-        elif cfg['data']['feature_type'] == 'onehot':
-            features = np.array(h5file['features_scores'], dtype=np.float32)
-        else:
-            raise Exception('{} feature type not supported.'.format(cfg['data']['feature_type']))
+        features = np.array(h5file['features_lastlayer'], dtype=np.float32)
         h5file.close()
 
         features = torch.from_numpy(features)
-
-        if cfg['data']['feature_type'] == 'softmax':
-            features = torch.nn.functional.softmax(features, dim=1)
-
-        if cfg['data']['feature_type'] == 'onehot':
-            features = features.permute(0,2,3,1)
-            num_classes = features.size(3)
-            labels = features.max(3)[1]
-            features = torch.nn.functional.one_hot(labels, num_classes=num_classes)
-            features = features.float()
-            features = features.permute(0,3,1,2)
-
 
         projections_wtm = projections_wtm.astype(np.int32)
         projections_wtm = torch.from_numpy(projections_wtm)
@@ -127,5 +100,4 @@ with torch.no_grad():
             f.create_dataset('scores', data=scores, dtype=np.float32)
             f.create_dataset('observed_map', data=observed_map, dtype=np.bool)
             f.create_dataset('height_map', data=height_map, dtype=np.float32)
-
 
