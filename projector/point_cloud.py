@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-from core import ProjectorUtils
+from .core import ProjectorUtils
 
 
 class PointCloud(ProjectorUtils):

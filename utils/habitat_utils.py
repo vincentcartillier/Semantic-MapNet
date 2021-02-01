@@ -6,8 +6,8 @@ from habitat.utils.visualizations import maps
 
 import numpy as np
 
-from semantic_utils import use_fine, object_whitelist
-from semantic_utils import replica_to_mp3d_12cat_mapping
+from .semantic_utils import use_fine, object_whitelist
+from .semantic_utils import replica_to_mp3d_12cat_mapping
 
 
 

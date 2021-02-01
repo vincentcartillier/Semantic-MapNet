@@ -145,11 +145,6 @@ class ProjectorUtils():
         x = z * x_scale
         y = z * y_scale
 
-        # rotate axis to algin with Habitat-MP3D axis definition (y is up)
-        #z = -z
-        #y = -y
-        # Do it using the T transform matrix
-
         xyz1 = torch.cat((x.unsqueeze(3), y.unsqueeze(3), z.unsqueeze(3), ones), dim=3)
         return xyz1
 
