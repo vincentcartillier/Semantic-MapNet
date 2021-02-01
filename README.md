@@ -31,10 +31,17 @@ run the following script for demo:
 ## Data
  * ```data/paths.json``` has all the manually recorded trajectories.
  * The semantic dense point cloud with cleaned floor labels are available here: https://gatech.box.com/s/enu0tsf9zrog9971iibf591xblhctq7r
- * Ground truth top-down semantic maps are available here: https://gatech.box.com/s/wxzh1bkdtbvccrhyqa4b3fyrjkenu07n
+ * Ground truth top-down semantic maps are available here: https://gatech.box.com/s/wxzh1bkdtbvccrhyqa4b3fyrjkenu07n. Place those under ```data/semmap/```
  * Place the [Matterport3D](https://niessner.github.io/Matterport/) data under ```data/mp3d/```
 
 ## Workflow
+ * Build training data: (1) build egocentric features + indices, (2) build topdown crops (250x250) (3) preprocess projection indices
+
+        python precompute_training_inputs/build_data.py
+        python precompute_training_inputs/build_crops.py
+        python precompute_training_inputs/build_projindices.py
+
+
  * To train SMNet you can run ```train.py```
  * Precompute testing features and projections indices for the full tours in the test set:
 
