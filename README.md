@@ -30,11 +30,16 @@ run the following script for demo:
 
 ## Data
  * ```data/paths.json``` has all the manually recorded trajectories.
- * The semantic dense point cloud with cleaned floor labels are available here: https://gatech.box.com/s/enu0tsf9zrog9971iibf591xblhctq7r
+ * The semantic dense point cloud of objects with cleaned floor labels are available here: https://gatech.box.com/s/enu0tsf9zrog9971iibf591xblhctq7r. Place those under ```data/object_point_clouds/```
  * Ground truth top-down semantic maps are available here: https://gatech.box.com/s/wxzh1bkdtbvccrhyqa4b3fyrjkenu07n. Place those under ```data/semmap/```
  * Place the [Matterport3D](https://niessner.github.io/Matterport/) data under ```data/mp3d/```
 
 ## Workflow
+ * To recompute the GT topdown semantic maps from the object point clouds (```data/object_point_clouds/```) you can run the following:
+
+        python compute_GT_topdown_semantic_maps/build_semmap_from_obj_point_cloud.py
+
+
  * Build training data: (1) build egocentric features + indices, (2) build topdown crops (250x250) (3) preprocess projection indices
 
         python precompute_training_inputs/build_data.py
