@@ -8,7 +8,7 @@ from torch_scatter import scatter_max
 
 resolution = 0.02
 
-obj_point_clouds = 'data/object_point_couds/'
+obj_point_clouds = 'data/object_point_clouds/'
 
 obj_files = os.listdir(obj_point_clouds)
 
@@ -26,7 +26,6 @@ for obj_f in tqdm(obj_files):
     obj_ids = np.array(f['obj_ids'])
     sem_ids = np.array(f['sem_ids'])
     colors  = np.array(f['colors'])
-    observed_map = np.array(f['observed_map'])
     f.close()
 
     # --- change coordinates to match map
@@ -59,14 +58,12 @@ for obj_f in tqdm(obj_files):
         map_z = np.zeros((world_dim_discret[2], world_dim_discret[0]), dtype=np.float32)
         map_instance = np.zeros((world_dim_discret[2], world_dim_discret[0]), dtype=np.int32)
         map_semantic = np.zeros((world_dim_discret[2], world_dim_discret[0]), dtype=np.int32)
-        observed_map = np.zeros((world_dim_discret[2], world_dim_discret[0]), dtype=np.bool)
         filename = os.path.join(output_dir, env+'.h5')
         with h5py.File(filename, 'w') as f:
             f.create_dataset('mask', data=mask, dtype=np.bool)
             f.create_dataset('map_z', data=map_z, dtype=np.float32)
             f.create_dataset('map_instance', data=map_instance, dtype=np.int32)
             f.create_dataset('map_semantic', data=map_semantic, dtype=np.int32)
-            f.create_dataset('observed_map', data=observed_map, dtype=np.bool)
         continue
 
 
@@ -138,7 +135,7 @@ for obj_f in tqdm(obj_files):
     map_semantic = flat_map_semantic.reshape(world_dim_discret[2], world_dim_discret[0])
     map_semantic = map_semantic.numpy()
     map_semantic = map_semantic.astype(np.float)
-
+    
     filename = os.path.join(output_dir, 
                             'semmap', 
                             env+'.h5')
@@ -147,7 +144,6 @@ for obj_f in tqdm(obj_files):
         f.create_dataset('map_heights', data=map_z, dtype=np.float32)
         f.create_dataset('map_instance', data=map_instance, dtype=np.int32)
         f.create_dataset('map_semantic', data=map_semantic, dtype=np.int32)
-        f.create_dataset('observed_map', data=observed_map, dtype=np.bool)
 
 json.dump(info, open(os.path.join(output_dir, 
                                   'semmap_GT_info.json'), 
