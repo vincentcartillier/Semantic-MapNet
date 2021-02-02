@@ -4,8 +4,9 @@ import h5py
 import torch
 import numpy as np
 from tqdm import tqdm
-from config import resolution
 from torch_scatter import scatter_max
+
+resolution = 0.02
 
 obj_point_clouds = 'data/object_point_couds/'
 
