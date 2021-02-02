@@ -3,7 +3,7 @@ import h5py
 import numpy as np
 from tqdm import tqdm
 
-from scipy.ndimage import binary_closing, binary_opening
+from scipy.ndimage import binary_closing
 from scipy.ndimage import binary_erosion
 from scipy.ndimage import binary_dilation
 

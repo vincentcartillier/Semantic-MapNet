@@ -2,31 +2,24 @@ import os
 import cv2
 import json
 import h5py
-import random
-import heapq
 import numpy as np
 from tqdm import tqdm
 from imageio import imread
 
-import numpy.ma as ma
-
 from scipy.ndimage import binary_opening
 from scipy.ndimage import binary_closing
 from scipy.ndimage import binary_dilation
-from scipy.ndimage import binary_erosion
 
 from scipy.spatial.transform import Rotation as R
 import bisect
 
-from config import object_whitelist
-from config import resolution
+from utils.semantic_utils import object_whitelist
 
 from astar import Astar, Node
 
-import csv
-
 from multiprocessing import Pool
 
+resolution = 0.02
 
 
 data_dir = '../data/ObjectNav/objectnav_mp3d_v1/val/'
@@ -165,6 +158,7 @@ def run_astar(episode):
     # -- Geodesic distance
     #os.system('pip install scikit-fmm')
     #import skfmm
+    #import numpy.ma as ma
     #mask = ~navmap&~goal_mask
     #mask = ~mask
     #mask = binary_dilation(mask.astype(int), structure=np.ones((10,10))).astype(np.bool)

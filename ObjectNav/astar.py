@@ -7,8 +7,6 @@ import numpy as np
 from geocube.api.core import make_geocube
 from shapely.geometry import LineString
 
-from time import time
-
 
 TURN_ANGLE = 30
 FORWARD_STEP_SIZE = 0.25
