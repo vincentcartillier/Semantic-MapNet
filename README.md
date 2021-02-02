@@ -58,6 +58,19 @@ run the following script for demo:
  * pretrained weights for RedNet are available here: https://gatech.box.com/s/7u58mgthx3l98hrkignthm7096y1b3fl
 
 
+## Object-Goal Navigation
+ * Download the [ObjectNav-Challenge-data](https://github.com/facebookresearch/habitat-lab) and place it under: ```data/ObjectNav/objectnav_mp3d_v1/val/``` 
+ * Download the precomputed topdown semantic map predictions here: https://gatech.box.com/s/sum8amlrso0ngrdl5s7ek3hfkrkp3u15 and place them in ```data/ObjectNav/semmap/```
+ * You can recompute the semantic predictions using the explorations paths in ```data/ObjectNav/paths.json``` and the ```test.py``` script.
+ * Compute the freespace maps:
+
+        python ObjectNav/build_freespace_maps.py
+
+ * Run A* path planning:
+
+        python ObjectNav/run_astar_planning.py
+
+
 ## Citation
 
 If you find our work useful in your research, please consider citing:
