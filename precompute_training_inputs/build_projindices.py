@@ -3,15 +3,14 @@ import json
 import h5py
 import numpy as np
 import torch
-from tqdm import tqdm
 from torch_scatter import scatter_max
 
 from multiprocessing import Pool
 
-input_dir = '../data/training/smnet_training_data/'
+input_dir = 'data/training/smnet_training_data/'
 
 output_name = 'smnet_training_data_maxHIndices' 
-output_root = '../data/training'
+output_root = 'data/training'
 output_dir = os.path.join(output_root, 
                           output_name)
 files = os.listdir(input_dir)
@@ -82,7 +81,7 @@ print(' -> Done')
 
 print('Build .h5 files for each splits')
 
-envs_splits = json.load(open('../data/envs_splits.json', 'r'))
+envs_splits = json.load(open('data/envs_splits.json', 'r'))
 
 files = os.listdir(output_dir)
 

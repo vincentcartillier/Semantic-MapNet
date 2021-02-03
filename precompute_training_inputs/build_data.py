@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import h5py
 import torch
@@ -11,7 +12,6 @@ sys.path.append(os.path.join(ROOT_DIR, '../'))
 
 from projector import _transform3D
 from projector.point_cloud import PointCloud
-from projector import RedNet_mltpl_outputs as RedNet_encoder
 from semseg.rednet import RedNet
 
 from utils.habitat_utils import HabitatUtils
@@ -22,7 +22,7 @@ import torchvision.transforms as transforms
 
 
 # -- settings
-output_dir = '../data/training/smnet_training_data/'
+output_dir = 'data/training/smnet_training_data/'
 
 
 #Settings
@@ -37,7 +37,7 @@ features_spatial_dimensions = (480,640)
 nb_samples_per_env = 50
 nb_frames_per_sample = 20
 
-paths = json.load(open('../data/paths.json', 'r'))
+paths = json.load(open('data/paths.json', 'r'))
 
 
 
@@ -52,7 +52,7 @@ cfg_rednet = {
     'SUNRGBD_pretrained_weights': '',
     'n_classes': 13,
     'upsample_prediction': True,
-    'load_model': '../rednet_mp3d_best_model.pkl',
+    'load_model': 'rednet_mp3d_best_model.pkl',
 }
 model = RedNet(cfg_rednet)
 model = model.to(device)
