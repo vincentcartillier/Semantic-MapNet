@@ -8,13 +8,13 @@ from utils import crop_memories
 from torch_scatter import scatter_add
 from tqdm import tqdm
 
-semmap_dir = 'data/semmap/'
-data_dir = 'data/training/smnet_training_data'
+semmap_dir = '../data/semmap/'
+data_dir = '../data/training/smnet_training_data'
 
-sample_semmap_output_dir = 'data/training/smnet_training_data_semmap'
-sample_indices_output_dir = 'data/training/smnet_training_data_indices'
+sample_semmap_output_dir = '../data/training/smnet_training_data_semmap'
+sample_indices_output_dir = '../data/training/smnet_training_data_indices'
 
-semmap_info = json.load(open('data/semmap_GT_info.json', 'r'))
+semmap_info = json.load(open('../data/semmap_GT_info.json', 'r'))
 
 #Settings
 resolution = 0.02 # topdown resolution
@@ -28,6 +28,8 @@ files = os.listdir(data_dir)
 
 info = {}
 semantic_maps = np.zeros((len(files), 250, 250), dtype=np.int32)
+instance_maps = np.zeros((len(files), 250, 250), dtype=np.int32)
+observed_masks = np.zeros((len(files), 250, 250), dtype=np.bool)
 semantic_maps_env_names = []
 for n, file in tqdm(enumerate(files)):
 
@@ -42,6 +44,7 @@ for n, file in tqdm(enumerate(files)):
 
     h5file = h5py.File(os.path.join(semmap_dir, env + '.h5'), 'r')
     semmap = np.array(h5file['map_semantic'], dtype=np.int)
+    insmap = np.array(h5file['map_instance'], dtype=np.int)
     h5file.close()
 
     h5file = h5py.File(os.path.join(data_dir, file), 'r')
@@ -108,11 +111,13 @@ for n, file in tqdm(enumerate(files)):
 
 
     sample_semmap = semmap[min_y:max_y+1, min_x:max_x+1]
+    sample_insmap = insmap[min_y:max_y+1, min_x:max_x+1]
 
     filename = os.path.join(sample_semmap_output_dir, file)
     with h5py.File(filename, 'w') as f:
         f.create_dataset('mask', data=mask_observe, dtype=np.bool)
         f.create_dataset('semmap', data=sample_semmap, dtype=np.int32)
+        f.create_dataset('insmap', data=sample_insmap, dtype=np.int32)
 
     filename = os.path.join(sample_indices_output_dir, file)
     with h5py.File(filename, 'w') as f:
@@ -124,14 +129,19 @@ for n, file in tqdm(enumerate(files)):
 
     semantic_maps_env_names.append(env)
     semantic_maps[n,:,:] = sample_semmap
+    instance_maps[n,:,:] = sample_insmap
+    observed_masks[n,:,:] = mask_observe
 
 
-json.dump(info, open('data/training/info_training_data_crops.json', 'w'))
+json.dump(info, open('../data/training/info_training_data_crops.json', 'w'))
 
 json.dump(semantic_maps_env_names,
-          open('data/training/smnet_training_data_semmap.json', 'w'))
+          open('../data/training/smnet_training_data_semmap.json', 'w'))
 
-with h5py.File('data/training/smnet_training_data_semmap.h5', 'w') as f:
+with h5py.File('../data/training/smnet_training_data_semmap.h5', 'w') as f:
     f.create_dataset('semantic_maps', data=semantic_maps, dtype=np.int32)
+    f.create_dataset('instance_maps', data=instance_maps, dtype=np.int32)
+    f.create_dataset('observed_masks', data=observed_masks, dtype=np.bool)
+
 
 

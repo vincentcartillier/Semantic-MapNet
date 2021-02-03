@@ -50,7 +50,7 @@ cfg_rednet = {
     'SUNRGBD_pretrained_weights': '',
     'n_classes': 13,
     'upsample_prediction': True,
-    'load_model': 'rednet_mp3d_best_model.pkl',
+    'load_model': '../rednet_mp3d_best_model.pkl',
 }
 model = RedNet(cfg_rednet)
 model = model.to(device)
