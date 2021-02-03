@@ -57,9 +57,9 @@ class SMNet(nn.Module):
         elif classname.find('BatchNorm') != -1:
             m.weight.data.fill_(1.)
             m.bias.data.fill_(1e-4)
-
-
-    def forward(self, features, proj_wtm, mask_outliers, heights, map_height, map_width):
+    
+    
+    def encode(self, features, proj_wtm, mask_outliers, heights, map_height, map_width):
 
         T,C,H,W = features.shape
 
@@ -159,6 +159,18 @@ class SMNet(nn.Module):
 
         memory = memory.permute(2,0,1)
         memory = memory.unsqueeze(0)
+
+        return memory, observed_masks, height_map
+
+
+    def forward(self, features, proj_wtm, mask_outliers, heights, map_height, map_width):
+
+        memory, observed_masks, height_map = self.encode(features, 
+                                                         proj_wtm, 
+                                                         mask_outliers, 
+                                                         heights, 
+                                                         map_height, 
+                                                         map_width)
 
         semmap_scores = self.decoder(memory)
         semmap_scores = semmap_scores.squeeze(0)
