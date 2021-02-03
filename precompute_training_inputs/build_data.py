@@ -22,7 +22,7 @@ import torchvision.transforms as transforms
 
 
 # -- settings
-output_dir = 'data/training/smnet_training_data/'
+output_dir = '../data/training/smnet_training_data/'
 
 
 #Settings
@@ -37,7 +37,7 @@ features_spatial_dimensions = (480,640)
 nb_samples_per_env = 50
 nb_frames_per_sample = 20
 
-paths = json.load(open('data/paths.json', 'r'))
+paths = json.load(open('../data/paths.json', 'r'))
 
 
 
