@@ -8,13 +8,13 @@ from utils.crop_memories import crop_memories
 from torch_scatter import scatter_add
 from tqdm import tqdm
 
-semmap_dir = '../data/semmap/'
-data_dir = '../data/training/smnet_training_data'
+semmap_dir = 'data/semmap/'
+data_dir = 'data/training/smnet_training_data'
 
-sample_semmap_output_dir = '../data/training/smnet_training_data_semmap'
-sample_indices_output_dir = '../data/training/smnet_training_data_indices'
+sample_semmap_output_dir = 'data/training/smnet_training_data_semmap'
+sample_indices_output_dir = 'data/training/smnet_training_data_indices'
 
-semmap_info = json.load(open('../data/semmap_GT_info.json', 'r'))
+semmap_info = json.load(open('data/semmap_GT_info.json', 'r'))
 
 #Settings
 resolution = 0.02 # topdown resolution
@@ -133,12 +133,12 @@ for n, file in tqdm(enumerate(files)):
     observed_masks[n,:,:] = mask_observe
 
 
-json.dump(info, open('../data/training/info_training_data_crops.json', 'w'))
+json.dump(info, open('data/training/info_training_data_crops.json', 'w'))
 
 json.dump(semantic_maps_env_names,
-          open('../data/training/smnet_training_data_semmap.json', 'w'))
+          open('data/training/smnet_training_data_semmap.json', 'w'))
 
-with h5py.File('../data/training/smnet_training_data_semmap.h5', 'w') as f:
+with h5py.File('data/training/smnet_training_data_semmap.h5', 'w') as f:
     f.create_dataset('semantic_maps', data=semantic_maps, dtype=np.int32)
     f.create_dataset('instance_maps', data=instance_maps, dtype=np.int32)
     f.create_dataset('observed_masks', data=observed_masks, dtype=np.bool)
