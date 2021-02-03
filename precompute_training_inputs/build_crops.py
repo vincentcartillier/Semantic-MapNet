@@ -3,7 +3,7 @@ import json
 import h5py
 import torch
 import numpy as np
-from utils import crop_memories
+from utils.crop_memories import crop_memories
 
 from torch_scatter import scatter_add
 from tqdm import tqdm
