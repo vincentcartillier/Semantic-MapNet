@@ -31,6 +31,8 @@ default_ego_dim = (480, 640) #egocentric resolution
 z_clip = 0.50 # detections over z_clip will be ignored
 vfov = 67.5
 vfov = vfov * np.pi / 180.0
+features_spatial_dimensions = (480,640)
+
 
 nb_samples_per_env = 50
 nb_frames_per_sample = 20
