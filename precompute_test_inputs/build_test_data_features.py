@@ -54,8 +54,6 @@ depth_normalize = transforms.Normalize(mean=[0.213], std=[0.285])
 # -- -- Load json
 paths = json.load(open('data/paths.json', 'r'))
 
-info = json.load(open('data/semmap_GT_info.json', 'r'))
-
 envs_splits = json.load(open('data/envs_splits.json', 'r'))
 test_envs = envs_splits['test_envs']
 test_envs = [x for x in test_envs if x in paths]
