@@ -30,8 +30,8 @@ run the following script for demo:
 
 ## Data
  * ```data/paths.json``` has all the manually recorded trajectories.
- * The semantic dense point cloud of objects with cleaned floor labels are available here: https://gatech.box.com/s/enu0tsf9zrog9971iibf591xblhctq7r. Place those under ```data/object_point_clouds/```
- * Ground truth top-down semantic maps are available here: https://gatech.box.com/s/wxzh1bkdtbvccrhyqa4b3fyrjkenu07n. Place those under ```data/semmap/```
+ * The semantic dense point cloud of objects with cleaned floor labels are available here: https://gatech.box.com/s/8jpio3o4u054dzv4ifc1ueagtk4loizp. Place those under ```data/object_point_clouds/```
+ * Ground truth top-down semantic maps are available here: https://gatech.box.com/s/ylpyjhhmyftq38umm7xojllgscuej6id. Place those under ```data/semmap/```
  * Place the [Matterport3D](https://niessner.github.io/Matterport/) data under ```data/mp3d/```
 
 ## Workflow
@@ -64,7 +64,7 @@ run the following script for demo:
 
 
 ## Object-Goal Navigation
- * Download the [ObjectNav-Challenge-data](https://github.com/facebookresearch/habitat-lab) and place it under: ```data/ObjectNav/objectnav_mp3d_v1/val/``` 
+ * Download the [ObjectNav-Challenge-data](https://github.com/facebookresearch/habitat-lab) and place it under: ```data/ObjectNav/objectnav_mp3d_v1/val/```
  * Download the precomputed topdown semantic map predictions here: https://gatech.box.com/s/sum8amlrso0ngrdl5s7ek3hfkrkp3u15 and place them in ```data/ObjectNav/semmap/```
  * You can recompute the semantic predictions using the explorations paths in ```data/ObjectNav/paths.json``` and the ```test.py``` script.
  * Compute the freespace maps:
