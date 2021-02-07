@@ -127,7 +127,7 @@ for n, file in tqdm(enumerate(files)):
 
     info[file]={'dim': [min_y, max_y, min_x, max_x]}
 
-    semantic_maps_env_names.append(env)
+    semantic_maps_env_names.append(file)
     semantic_maps[n,:,:] = sample_semmap
     instance_maps[n,:,:] = sample_insmap
     observed_masks[n,:,:] = mask_observe
