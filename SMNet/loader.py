@@ -9,7 +9,7 @@ from torch.utils import data
 
 import torchvision.transforms as transforms
 
-envs_splits = json.load(open('../data/envs_splits.json', 'r'))
+envs_splits = json.load(open('data/envs_splits.json', 'r'))
 
 class SMNetLoader(data.Dataset):
     def __init__(self, cfg, split='train'):
