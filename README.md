@@ -30,8 +30,8 @@ run the following script for demo:
 
 ## Data
  * ```data/paths.json``` has all the manually recorded trajectories.
- * The semantic dense point cloud of objects with cleaned floor labels are available here: https://gatech.box.com/s/8jpio3o4u054dzv4ifc1ueagtk4loizp. Place those under ```data/object_point_clouds/```
- * Ground truth top-down semantic maps are available here: https://gatech.box.com/s/ylpyjhhmyftq38umm7xojllgscuej6id. Place those under ```data/semmap/```
+ * The semantic dense point cloud of objects with cleaned floor labels are available here: https://gatech.box.com/s/z8tr6fc0x02nny68glie0qwcietienrs. Place those under ```data/object_point_clouds/```
+ * Ground truth top-down semantic maps are available here: https://gatech.box.com/s/7v3tg2918rpjog65in16ilz8c15z31ra. Place those under ```data/semmap/```
  * Place the [Matterport3D](https://niessner.github.io/Matterport/) data under ```data/mp3d/```
 
 ## Workflow
@@ -59,8 +59,8 @@ run the following script for demo:
 
 
 ## Pre-trained models
- * pretrained weights are available here: https://gatech.box.com/s/yazgr05tavh1nsdydyl5g3weyli68who
- * pretrained weights for RedNet are available here: https://gatech.box.com/s/7u58mgthx3l98hrkignthm7096y1b3fl
+ * pretrained weights are available here: https://gatech.box.com/s/b89kfo3qukg66qoxamxsskcjmjoi98rq
+ * pretrained weights for RedNet are available here: https://gatech.box.com/s/8hluez3h10ajjfe8kbvfvdl5gupj1agb
 
 
 ## Object-Goal Navigation
