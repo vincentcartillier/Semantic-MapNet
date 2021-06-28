@@ -30,8 +30,8 @@ run the following script for demo:
 
 ## Data
  * ```data/paths.json``` has all the manually recorded trajectories.
- * The semantic dense point cloud of objects with cleaned floor labels are available here: https://gatech.box.com/s/z8tr6fc0x02nny68glie0qwcietienrs. Place those under ```data/object_point_clouds/```. If you are looking to recompute those point clouds you can run ```data/build_point_cloud_from_mesh.py```.
- * Ground truth top-down semantic maps are available here: https://gatech.box.com/s/7v3tg2918rpjog65in16ilz8c15z31ra. Place those under ```data/semmap/```
+ * The semantic dense point cloud of objects with cleaned floor labels are available here: https://drive.google.com/drive/folders/1Fwbq7Bvl4kIjJ-YOJNbYWHD_6Gh8lFwQ?usp=sharing. Place those under ```data/object_point_clouds/```. If you are looking to recompute those point clouds you can run ```data/build_point_cloud_from_mesh.py```.
+ * Ground truth top-down semantic maps are available here: https://drive.google.com/drive/folders/1aM9vfDckY6K81mrVhVLmEX5rKZ2B1Q5r?usp=sharing. Place those under ```data/semmap/```
  * Place the [Matterport3D](https://niessner.github.io/Matterport/) data under ```data/mp3d/```
 
 ## Workflow
@@ -59,8 +59,8 @@ run the following script for demo:
 
 
 ## Pre-trained models
- * pretrained weights are available here: https://gatech.box.com/s/b89kfo3qukg66qoxamxsskcjmjoi98rq
- * pretrained weights for RedNet are available here: https://gatech.box.com/s/8hluez3h10ajjfe8kbvfvdl5gupj1agb
+ * pretrained weights are available here: https://drive.google.com/file/d/1KsJoTs91ez2bR35wW1VlD8jBG_gB-k7a/view?usp=sharing
+ * pretrained weights for RedNet are available here: https://drive.google.com/file/d/1PZDwl6dmIl6bhmWG42aRGyghgQQWTOcz/view?usp=sharing
 
 
 ## Object-Goal Navigation
