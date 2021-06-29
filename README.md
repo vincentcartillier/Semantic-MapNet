@@ -65,7 +65,7 @@ run the following script for demo:
 
 ## Object-Goal Navigation
  * Download the [ObjectNav-Challenge-data](https://github.com/facebookresearch/habitat-lab) and place it under: ```data/ObjectNav/objectnav_mp3d_v1/val/```
- * Download the precomputed topdown semantic map predictions here: https://gatech.box.com/s/sum8amlrso0ngrdl5s7ek3hfkrkp3u15 and place them in ```data/ObjectNav/semmap/```
+ * Download the precomputed topdown semantic map predictions here: https://drive.google.com/file/d/1wPtJaoDO15OtPcWcXuAbCtGQ3r-MdQM2/view?usp=sharing and place them in ```data/ObjectNav/semmap/```
  * You can recompute the semantic predictions using the explorations paths in ```data/ObjectNav/paths.json``` and the ```test.py``` script.
  * Compute the freespace maps:
 
