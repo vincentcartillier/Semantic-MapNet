@@ -152,7 +152,7 @@ class SMNet(nn.Module):
 
     def forward(self, features, proj_indices, masks_inliers):
 
-        memory, observed_masks = self.decode(features, 
+        memory, observed_masks = self.encode(features, 
                                              proj_indices, 
                                              masks_inliers)
 
