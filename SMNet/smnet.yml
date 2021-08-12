@@ -11,7 +11,7 @@ data:
     train_split: train
     val_split: val
     root: data/training/
-    ego_downsample: Fase
+    ego_downsample: False
     feature_type: lastlayer
 training:
     train_epoch: 200

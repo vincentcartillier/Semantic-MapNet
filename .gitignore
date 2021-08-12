@@ -1,0 +1,6 @@
+data
+runs
+checkpoints
+
+*.pyc
+*.pkl

@@ -7,8 +7,7 @@ import numpy as np
 from tqdm import tqdm
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = BASE_DIR
-sys.path.append(os.path.join(ROOT_DIR, '../'))
+sys.path.append(os.path.join(BASE_DIR, '../'))
 
 from projector import _transform3D
 from projector.point_cloud import PointCloud
@@ -23,6 +22,7 @@ import torchvision.transforms as transforms
 
 # -- settings
 output_dir = 'data/training/smnet_training_data/'
+os.makedirs(output_dir, exist_ok=True)
 
 
 #Settings
@@ -52,7 +52,7 @@ cfg_rednet = {
     'SUNRGBD_pretrained_weights': '',
     'n_classes': 13,
     'upsample_prediction': True,
-    'load_model': 'rednet_mp3d_best_model.pkl',
+    'model_path': 'rednet_mp3d_best_model.pkl',
 }
 model = RedNet(cfg_rednet)
 model = model.to(device)
@@ -85,7 +85,7 @@ projector = PointCloud(vfov, 1,
  -->> START
 """
 info = {}
-for env, path in paths.items():
+for env, path in tqdm(paths.items()):
 
     house, level = env.split('_')
     scene = 'data/mp3d/{}/{}.glb'.format(house, house)
