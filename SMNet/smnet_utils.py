@@ -1,6 +1,6 @@
-import os
-import logging
 import datetime
+import logging
+import os
 
 
 def get_logger(logdir):
@@ -14,5 +14,3 @@ def get_logger(logdir):
     logger.addHandler(hdlr)
     logger.setLevel(logging.INFO)
     return logger
-
-

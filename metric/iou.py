@@ -1,5 +1,6 @@
-import torch
 import numpy as np
+import torch
+
 from metric import metric
 from metric.confusionmatrix import ConfusionMatrix
 
@@ -47,20 +48,20 @@ class IoU(metric.Metric):
         integer values between 0 and K-1.
         """
         # Dimensions check
-        #assert predicted.size(0) == target.size(0), \
+        # assert predicted.size(0) == target.size(0), \
         #    'number of targets and predicted outputs do not match'
-        #assert predicted.dim() == 3 or predicted.dim() == 4, \
+        # assert predicted.dim() == 3 or predicted.dim() == 4, \
         #    "predictions must be of dimension (N, H, W) or (N, K, H, W)"
-        #assert target.dim() == 3 or target.dim() == 4, \
+        # assert target.dim() == 3 or target.dim() == 4, \
         #    "targets must be of dimension (N, H, W) or (N, K, H, W)"
 
         # If the tensor is in categorical format convert it to integer format
-        #if predicted.dim() == 4:
+        # if predicted.dim() == 4:
         #    _, predicted = predicted.max(1)
-        #if target.dim() == 4:
+        # if target.dim() == 4:
         #    _, target = target.max(1)
 
-        #self.conf_metric.add(predicted.view(-1), target.view(-1))
+        # self.conf_metric.add(predicted.view(-1), target.view(-1))
         # -- data is already flatten
         # -- preprocessed in the train() pipeline
         self.conf_metric.add(predicted, target)
@@ -83,33 +84,31 @@ class IoU(metric.Metric):
         false_negative = np.sum(conf_matrix, 1) - true_positive
 
         acc = np.sum(true_positive) / np.sum(conf_matrix)
-        
+
         # -- IoU
         # Just in case we get a division by 0, ignore/hide the error
-        with np.errstate(divide='ignore', invalid='ignore'):
+        with np.errstate(divide="ignore", invalid="ignore"):
             iou = true_positive / (true_positive + false_positive + false_negative)
-        
+
         if self.ignore_index is not None:
             for index in self.ignore_index:
                 iou[index] = np.nan
-        
+
         miou = np.nanmean(iou)
-        
-        
+
         # -- Recalls
         # Just in case we get a division by 0, ignore/hide the error
-        with np.errstate(divide='ignore', invalid='ignore'):
+        with np.errstate(divide="ignore", invalid="ignore"):
             recalls = true_positive / np.sum(conf_matrix, 1)
-        
+
         if self.ignore_index is not None:
             for index in self.ignore_index:
                 recalls[index] = np.nan
 
         recall = np.nanmean(recalls)
-       
 
         # -- Precisions
-        with np.errstate(divide='ignore', invalid='ignore'):
+        with np.errstate(divide="ignore", invalid="ignore"):
             precisions = true_positive / np.sum(conf_matrix, 0)
 
         if self.ignore_index is not None:
@@ -117,6 +116,5 @@ class IoU(metric.Metric):
                 precisions[index] = np.nan
 
         precision = np.nanmean(precisions)
-
 
         return iou, miou, acc, recalls, recall, precisions, precision

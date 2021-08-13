@@ -1,59 +1,60 @@
-import torch
-import numpy as np
-
 import math
 
-def _transform3D(xyzhe, device=torch.device("cpu")):
-    """ Return (N, 4, 4) transformation matrices from (N,5) x,y,z,heading,elevation """
+import numpy as np
+import torch
 
-    theta_x = xyzhe[:,4] # elevation
+
+def _transform3D(xyzhe, device=torch.device("cpu")):
+    """Return (N, 4, 4) transformation matrices from (N,5) x,y,z,heading,elevation"""
+
+    theta_x = xyzhe[:, 4]  # elevation
     cx = torch.cos(theta_x)
     sx = torch.sin(theta_x)
 
-    theta_y = xyzhe[:,3] # heading
+    theta_y = xyzhe[:, 3]  # heading
     cy = torch.cos(theta_y)
     sy = torch.sin(theta_y)
 
     T = torch.zeros(xyzhe.shape[0], 4, 4, device=device)
-    T[:,0,0] =  cy
-    T[:,0,1] =  sx*sy
-    T[:,0,2] =  cx*sy 
-    T[:,0,3] =  xyzhe[:,0] # x
+    T[:, 0, 0] = cy
+    T[:, 0, 1] = sx * sy
+    T[:, 0, 2] = cx * sy
+    T[:, 0, 3] = xyzhe[:, 0]  # x
 
-    T[:,1,0] =  0
-    T[:,1,1] =  cx
-    T[:,1,2] =  -sx
-    T[:,1,3] =  xyzhe[:,1] # y
+    T[:, 1, 0] = 0
+    T[:, 1, 1] = cx
+    T[:, 1, 2] = -sx
+    T[:, 1, 3] = xyzhe[:, 1]  # y
 
-    T[:,2,0] =  -sy
-    T[:,2,1] =  cy*sx
-    T[:,2,2] =  cy*cx
-    T[:,2,3] =  xyzhe[:,2] # z
+    T[:, 2, 0] = -sy
+    T[:, 2, 1] = cy * sx
+    T[:, 2, 2] = cy * cx
+    T[:, 2, 3] = xyzhe[:, 2]  # z
 
-    T[:,3,3] =  1
+    T[:, 3, 3] = 1
     return T
 
 
+class ProjectorUtils:
+    def __init__(
+        self,
+        vfov,
+        batch_size,
+        feature_map_height,
+        feature_map_width,
+        output_height,
+        output_width,
+        gridcellsize,
+        world_shift_origin,
+        z_clip_threshold,
+        device,
+    ):
 
-class ProjectorUtils():
-    def __init__(self,
-                vfov,
-                batch_size,
-                feature_map_height,
-                feature_map_width,
-                output_height,
-                output_width,
-                gridcellsize,
-                world_shift_origin,
-                z_clip_threshold,
-                device,
-                ):
-            
         self.vfov = vfov
         self.batch_size = batch_size
         self.fmh = feature_map_height
         self.fmw = feature_map_width
-        self.output_height = output_height # dimensions of the topdown map
+        self.output_height = output_height  # dimensions of the topdown map
         self.output_width = output_width
         self.gridcellsize = gridcellsize
         self.z_clip_threshold = z_clip_threshold
@@ -64,21 +65,17 @@ class ProjectorUtils():
             batch_size, feature_map_height, feature_map_width
         )
 
-    
     def compute_intrinsic_matrix(self, width, height, vfov):
-        hfov = width/height * vfov
-        f_x = width / (2.0*math.tan(hfov/2.0))
-        f_y = height / (2.0*math.tan(vfov/2.0))
+        hfov = width / height * vfov
+        f_x = width / (2.0 * math.tan(hfov / 2.0))
+        f_y = height / (2.0 * math.tan(vfov / 2.0))
         cy = height / 2.0
         cx = width / 2.0
-        K = torch.Tensor([[f_x, 0, cx],
-                          [0, f_y, cy],
-                          [0, 0, 1.0]])
+        K = torch.Tensor([[f_x, 0, cx], [0, f_y, cy], [0, 0, 1.0]])
         return K
 
-
     def compute_scaling_params(self, batch_size, image_height, image_width):
-        """ Precomputes tensors for calculating depth to point cloud """
+        """Precomputes tensors for calculating depth to point cloud"""
         # (float tensor N,3,3) : Camera intrinsics matrix
         K = self.compute_intrinsic_matrix(image_width, image_height, self.vfov)
         K = K.to(device=self.device).unsqueeze(0)
@@ -104,8 +101,8 @@ class ProjectorUtils():
         y_cols = y_cols.float()
 
         # 0.5 is so points are projected through the center of pixels
-        x_scale = (x_rows + 0.5 - cx) / fx#; print(x_scale[0,0,:])
-        y_scale = (y_cols + 0.5 - cy) / fy#; print(y_scale[0,:,0]); stop
+        x_scale = (x_rows + 0.5 - cx) / fx  # ; print(x_scale[0,0,:])
+        y_scale = (y_cols + 0.5 - cy) / fy  # ; print(y_scale[0,:,0]); stop
         ones = (
             torch.ones((batch_size, image_height, image_width), device=self.device)
             .unsqueeze(3)
@@ -220,12 +217,22 @@ class ProjectorUtils():
         world_xyz -= self.world_shift_origin
 
         # shape: (batch_size, height, width, 3)
-        pixel_to_world = torch.reshape(world_xyz,((depth_img_array.shape[0],depth_img_array.shape[1],depth_img_array.shape[2],3,)),)
+        pixel_to_world = torch.reshape(
+            world_xyz,
+            (
+                (
+                    depth_img_array.shape[0],
+                    depth_img_array.shape[1],
+                    depth_img_array.shape[2],
+                    3,
+                )
+            ),
+        )
 
         return pixel_to_world
 
     def discretize_point_cloud(self, point_cloud, camera_height):
-        """ #GEO:
+        """#GEO:
         Maps pixel in world coordinates to an (output_height, output_width) map.
         - Discretizes the (x,y) coordinates of the features to gridcellsize.
         - Remove features that lie outside the (output_height, output_width) size.
@@ -247,29 +254,33 @@ class ProjectorUtils():
             Output:
                 pixels_in_map: (batch_size, features_height, features_width, 2)
         """
-        
+
         # -- /!\/!\
         # -- /!\ in Habitat-MP3D y-axis is up. /!\/!\
         # -- /!\/!\
-        pixels_in_map = ((point_cloud[:, :, :, [0,2]])/ self.gridcellsize).round()
-        
+        pixels_in_map = ((point_cloud[:, :, :, [0, 2]]) / self.gridcellsize).round()
+
         # Anything outside map boundary gets mapped to (0,0) with an empty feature
         # mask for outside map indices
-        outside_map_indices = (pixels_in_map[:, :, :, 0] >= self.output_width) +\
-                              (pixels_in_map[:, :, :, 1] >= self.output_height) +\
-                              (pixels_in_map[:, :, :, 0] < 0) +\
-                              (pixels_in_map[:, :, :, 1] < 0)
-        
+        outside_map_indices = (
+            (pixels_in_map[:, :, :, 0] >= self.output_width)
+            + (pixels_in_map[:, :, :, 1] >= self.output_height)
+            + (pixels_in_map[:, :, :, 0] < 0)
+            + (pixels_in_map[:, :, :, 1] < 0)
+        )
+
         # shape: camera_y (batch_size, features_height, features_width)
-        camera_y = (camera_height.unsqueeze(1).unsqueeze(1).repeat(1, pixels_in_map.shape[1], pixels_in_map.shape[2]))
-        
+        camera_y = (
+            camera_height.unsqueeze(1)
+            .unsqueeze(1)
+            .repeat(1, pixels_in_map.shape[1], pixels_in_map.shape[2])
+        )
+
         # Anything above camera_y + z_clip_threshold will be ignored
-        above_threshold_z_indices = point_cloud[:, :, :, 1] > (camera_y + self.z_clip_threshold)
-        
+        above_threshold_z_indices = point_cloud[:, :, :, 1] > (
+            camera_y + self.z_clip_threshold
+        )
+
         mask_outliers = outside_map_indices + above_threshold_z_indices
 
         return pixels_in_map.long(), mask_outliers
-
-
-
-

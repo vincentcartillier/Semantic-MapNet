@@ -2,18 +2,19 @@
 Builds a colored point cloud from a semantic mesh (.ply).
 Colors are assigned based on the semantic object id
 """
-import os, sys
+import os
+import sys
+
 import numpy as np
 import open3d as o3d
-from tqdm import tqdm
 from plyfile import PlyData
+from tqdm import tqdm
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(ROOT_DIR, '../'))
 
 from utils.habitat_utils import HabitatUtils
-from utils.semantic_utils import label_colours
-from utils.semantic_utils import use_fine, object_whitelist
+from utils.semantic_utils import label_colours, object_whitelist, use_fine
 
 env = '17DRP5sb8fy_0'
 

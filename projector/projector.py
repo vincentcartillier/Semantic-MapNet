@@ -1,6 +1,6 @@
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
 
 from projector.core import ProjectorUtils, _transform3D
 
@@ -40,18 +40,20 @@ class Projector(ProjectorUtils):
             device (torch.device, optional): Defaults to torch.device('cuda').
         """
 
-        ProjectorUtils.__init__(self, 
-                                vfov, 
-                                batch_size, 
-                                feature_map_height,
-                                feature_map_width, 
-                                output_height, # dimensions of the topdown map
-                                output_width,
-                                gridcellsize, 
-                                world_shift_origin, 
-                                z_clip_threshold,
-                                device)
-        
+        ProjectorUtils.__init__(
+            self,
+            vfov,
+            batch_size,
+            feature_map_height,
+            feature_map_width,
+            output_height,  # dimensions of the topdown map
+            output_width,
+            gridcellsize,
+            world_shift_origin,
+            z_clip_threshold,
+            device,
+        )
+
         self.vfov = vfov
         self.batch_size = batch_size
         self.fmh = feature_map_height
@@ -61,7 +63,6 @@ class Projector(ProjectorUtils):
         self.gridcellsize = gridcellsize
         self.z_clip_threshold = z_clip_threshold
         self.device = device
-
 
     def forward(self, depth, T, obs_per_map=1, return_heights=False):
         """Forward Function
@@ -83,7 +84,7 @@ class Projector(ProjectorUtils):
         assert depth.shape[2] == self.fmh
         assert depth.shape[3] == self.fmw
 
-        depth = depth[:,0,:,:]
+        depth = depth[:, 0, :, :]
 
         # -- filter out the semantic classes with depth == 0. Those sem_classes map to the agent
         # itself .. and thus are considered outliers
@@ -93,15 +94,16 @@ class Projector(ProjectorUtils):
         # # GEO:
         # shape: features_to_world (N, features_height, features_width, 3)
         point_cloud = self.pixel_to_world_mapping(depth, T)
-        
-        camera_height = T[:,1,3]
 
-        projection_indices_2D, outliers = self.discretize_point_cloud(point_cloud, camera_height)
+        camera_height = T[:, 1, 3]
+
+        projection_indices_2D, outliers = self.discretize_point_cloud(
+            point_cloud, camera_height
+        )
 
         outliers = no_depth_mask + outliers
-        
+
         if return_heights:
-            return projection_indices_2D, outliers, point_cloud[...,1]
+            return projection_indices_2D, outliers, point_cloud[..., 1]
         else:
             return projection_indices_2D, outliers
-

@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-import torch.utils.model_zoo as model_zoo
 import torch.nn.functional as F
+import torch.utils.model_zoo as model_zoo
 from torch.utils.checkpoint import checkpoint
 
 
@@ -10,16 +10,15 @@ class RedNet(nn.Module):
 
         super(RedNet, self).__init__()
 
-        num_classes = cfg['n_classes']
-        pretrained = cfg['resnet_pretrained']
+        num_classes = cfg["n_classes"]
+        pretrained = cfg["resnet_pretrained"]
 
         block = Bottleneck
         transblock = TransBasicBlock
         layers = [3, 4, 6, 3]
         # original resnet
         self.inplanes = 64
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
-                               bias=False)
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -30,8 +29,7 @@ class RedNet(nn.Module):
 
         # resnet for depth channel
         self.inplanes = 64
-        self.conv1_d = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3,
-                                 bias=False)
+        self.conv1_d = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1_d = nn.BatchNorm2d(64)
         self.layer1_d = self._make_layer(block, 64, layers[0])
         self.layer2_d = self._make_layer(block, 128, layers[1], stride=2)
@@ -54,20 +52,29 @@ class RedNet(nn.Module):
         self.inplanes = 64
         self.final_conv = self._make_transpose(transblock, 64, 3)
 
-        self.final_deconv_custom = nn.ConvTranspose2d(self.inplanes, num_classes, kernel_size=2,
-                                               stride=2, padding=0, bias=True)
+        self.final_deconv_custom = nn.ConvTranspose2d(
+            self.inplanes, num_classes, kernel_size=2, stride=2, padding=0, bias=True
+        )
 
-        self.out5_conv_custom = nn.Conv2d(256, num_classes, kernel_size=1, stride=1, bias=True)
-        self.out4_conv_custom = nn.Conv2d(128, num_classes, kernel_size=1, stride=1, bias=True)
-        self.out3_conv_custom = nn.Conv2d(64, num_classes, kernel_size=1, stride=1, bias=True)
-        self.out2_conv_custom = nn.Conv2d(64, num_classes, kernel_size=1, stride=1, bias=True)
+        self.out5_conv_custom = nn.Conv2d(
+            256, num_classes, kernel_size=1, stride=1, bias=True
+        )
+        self.out4_conv_custom = nn.Conv2d(
+            128, num_classes, kernel_size=1, stride=1, bias=True
+        )
+        self.out3_conv_custom = nn.Conv2d(
+            64, num_classes, kernel_size=1, stride=1, bias=True
+        )
+        self.out2_conv_custom = nn.Conv2d(
+            64, num_classes, kernel_size=1, stride=1, bias=True
+        )
 
         if pretrained:
             self._load_resnet_pretrained()
 
     def weights_init(self, m):
         classname = m.__class__.__name__
-        if classname.find('Conv') != -1:
+        if classname.find("Conv") != -1:
             nn.init.kaiming_normal_(m.weight)
             if m.bias is not None:
                 nn.init.zeros_(m.bias)
@@ -75,14 +82,17 @@ class RedNet(nn.Module):
             m.weight.data.fill_(1)
             m.bias.data.zero_()
 
-
-
     def _make_layer(self, block, planes, blocks, stride=1):
         downsample = None
         if stride != 1 or self.inplanes != planes * block.expansion:
             downsample = nn.Sequential(
-                nn.Conv2d(self.inplanes, planes * block.expansion,
-                          kernel_size=1, stride=stride, bias=False),
+                nn.Conv2d(
+                    self.inplanes,
+                    planes * block.expansion,
+                    kernel_size=1,
+                    stride=stride,
+                    bias=False,
+                ),
                 nn.BatchNorm2d(planes * block.expansion),
             )
 
@@ -100,15 +110,21 @@ class RedNet(nn.Module):
         upsample = None
         if stride != 1:
             upsample = nn.Sequential(
-                nn.ConvTranspose2d(self.inplanes, planes,
-                                   kernel_size=2, stride=stride,
-                                   padding=0, bias=False),
+                nn.ConvTranspose2d(
+                    self.inplanes,
+                    planes,
+                    kernel_size=2,
+                    stride=stride,
+                    padding=0,
+                    bias=False,
+                ),
                 nn.BatchNorm2d(planes),
             )
         elif self.inplanes != planes:
             upsample = nn.Sequential(
-                nn.Conv2d(self.inplanes, planes,
-                          kernel_size=1, stride=stride, bias=False),
+                nn.Conv2d(
+                    self.inplanes, planes, kernel_size=1, stride=stride, bias=False
+                ),
                 nn.BatchNorm2d(planes),
             )
 
@@ -125,30 +141,30 @@ class RedNet(nn.Module):
     def _make_agant_layer(self, inplanes, planes):
 
         layers = nn.Sequential(
-            nn.Conv2d(inplanes, planes, kernel_size=1,
-                      stride=1, padding=0, bias=False),
+            nn.Conv2d(inplanes, planes, kernel_size=1, stride=1, padding=0, bias=False),
             nn.BatchNorm2d(planes),
-            nn.ReLU(inplace=True)
+            nn.ReLU(inplace=True),
         )
         return layers
 
     def _load_resnet_pretrained(self):
-        pretrain_dict = model_zoo.load_url(utils.model_urls['resnet50'])
+        pretrain_dict = model_zoo.load_url(utils.model_urls["resnet50"])
         model_dict = {}
         state_dict = self.state_dict()
         for k, v in pretrain_dict.items():
             if k in state_dict:
-                if k.startswith('conv1'):  # the first conv_op
+                if k.startswith("conv1"):  # the first conv_op
                     model_dict[k] = v
-                    model_dict[k.replace('conv1', 'conv1_d')] = torch.mean(v, 1).data. \
-                        view_as(state_dict[k.replace('conv1', 'conv1_d')])
+                    model_dict[k.replace("conv1", "conv1_d")] = torch.mean(
+                        v, 1
+                    ).data.view_as(state_dict[k.replace("conv1", "conv1_d")])
 
-                elif k.startswith('bn1'):
+                elif k.startswith("bn1"):
                     model_dict[k] = v
-                    model_dict[k.replace('bn1', 'bn1_d')] = v
-                elif k.startswith('layer'):
+                    model_dict[k.replace("bn1", "bn1_d")] = v
+                elif k.startswith("layer"):
                     model_dict[k] = v
-                    model_dict[k[:6] + '_d' + k[6:]] = v
+                    model_dict[k[:6] + "_d" + k[6:]] = v
         state_dict.update(model_dict)
         self.load_state_dict(state_dict)
 
@@ -231,8 +247,9 @@ class RedNet(nn.Module):
 
 def conv3x3(in_planes, out_planes, stride=1):
     "3x3 convolution with padding"
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=1, bias=False)
+    return nn.Conv2d(
+        in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False
+    )
 
 
 class Bottleneck(nn.Module):
@@ -242,8 +259,9 @@ class Bottleneck(nn.Module):
         super(Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
-                               padding=1, bias=False)
+        self.conv2 = nn.Conv2d(
+            planes, planes, kernel_size=3, stride=stride, padding=1, bias=False
+        )
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
@@ -273,6 +291,7 @@ class Bottleneck(nn.Module):
 
         return out
 
+
 class TransBasicBlock(nn.Module):
     expansion = 1
 
@@ -282,9 +301,15 @@ class TransBasicBlock(nn.Module):
         self.bn1 = nn.BatchNorm2d(inplanes)
         self.relu = nn.ReLU(inplace=True)
         if upsample is not None and stride != 1:
-            self.conv2 = nn.ConvTranspose2d(inplanes, planes,
-                                            kernel_size=3, stride=stride, padding=1,
-                                            output_padding=1, bias=False)
+            self.conv2 = nn.ConvTranspose2d(
+                inplanes,
+                planes,
+                kernel_size=3,
+                stride=stride,
+                padding=1,
+                output_padding=1,
+                bias=False,
+            )
         else:
             self.conv2 = conv3x3(inplanes, planes, stride)
         self.bn2 = nn.BatchNorm2d(planes)
@@ -308,7 +333,3 @@ class TransBasicBlock(nn.Module):
         out = self.relu(out)
 
         return out
-
-
-
-

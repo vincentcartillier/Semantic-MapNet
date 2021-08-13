@@ -1,26 +1,26 @@
-import os
-import yaml
-import json
-import time
-import torch
-import shutil
-import random
 import argparse
-import numpy as np
-import torch.multiprocessing as mp
+import json
+import os
+import random
+import shutil
+import time
 from pathlib import Path
-from torch.utils import data
+
+import numpy as np
+import torch
 import torch.distributed as distrib
+import torch.multiprocessing as mp
+import yaml
 from tensorboardX import SummaryWriter
 from torch.optim.lr_scheduler import LambdaLR
+from torch.utils import data
 from torch.utils.data import DistributedSampler
 
-
-from SMNet.loader import SMNetLoader
-from SMNet.model import SMNet
-from SMNet.loss import SemmapLoss
 from metric import averageMeter
 from metric.iou import IoU
+from SMNet.loader import SMNetLoader
+from SMNet.loss import SemmapLoss
+from SMNet.model import SMNet
 from SMNet.smnet_utils import get_logger
 
 
@@ -36,10 +36,10 @@ def train(rank, world_size, cfg):
     master_port = int(os.environ.get("MASTER_PORT", 8738))
     master_addr = os.environ.get("MASTER_ADDR", "127.0.0.1")
     tcp_store = torch.distributed.TCPStore(
-        master_addr, master_port, world_size, rank==0
+        master_addr, master_port, world_size, rank == 0
     )
     torch.distributed.init_process_group(
-        'nccl', store=tcp_store, rank=rank, world_size=world_size
+        "nccl", store=tcp_store, rank=rank, world_size=world_size
     )
 
     # Setup device
@@ -55,16 +55,15 @@ def train(rank, world_size, cfg):
         logger = get_logger(cfg["logdir"])
         logger.info("Let SMNet training begin !!")
 
-
     # Setup Dataloader
-    t_loader = SMNetLoader(cfg["data"], split=cfg['data']['train_split'])
-    v_loader = SMNetLoader(cfg['data'], split=cfg["data"]["val_split"])
+    t_loader = SMNetLoader(cfg["data"], split=cfg["data"]["train_split"])
+    v_loader = SMNetLoader(cfg["data"], split=cfg["data"]["val_split"])
     t_sampler = DistributedSampler(t_loader)
     v_sampler = DistributedSampler(v_loader, shuffle=False)
 
     if rank == 0:
-        print('#Envs in train: %d' % (len(t_loader.files)))
-        print('#Envs in val: %d' % (len(v_loader.files)))
+        print("#Envs in train: %d" % (len(t_loader.files)))
+        print("#Envs in val: %d" % (len(v_loader.files)))
 
     trainloader = data.DataLoader(
         t_loader,
@@ -73,7 +72,7 @@ def train(rank, world_size, cfg):
         drop_last=True,
         pin_memory=True,
         sampler=t_sampler,
-        multiprocessing_context='fork',
+        multiprocessing_context="fork",
     )
 
     valloader = data.DataLoader(
@@ -82,43 +81,45 @@ def train(rank, world_size, cfg):
         num_workers=cfg["training"]["n_workers"],
         pin_memory=True,
         sampler=v_sampler,
-        multiprocessing_context='fork',
+        multiprocessing_context="fork",
     )
 
     # Setup Model
-    model = SMNet(cfg['model'], device)
+    model = SMNet(cfg["model"], device)
     model.apply(model.weights_init)
     model = model.to(device)
 
-    if device.type == 'cuda':
+    if device.type == "cuda":
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[rank])
 
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
     if rank == 0:
-        print('# trainable parameters = ', params)
-
+        print("# trainable parameters = ", params)
 
     # Setup optimizer, lr_scheduler and loss function
-    optimizer_params = {k: v for k, v in cfg["training"]["optimizer"].items() if k != "name"}
-    optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), **optimizer_params)
+    optimizer_params = {
+        k: v for k, v in cfg["training"]["optimizer"].items() if k != "name"
+    }
+    optimizer = torch.optim.SGD(
+        filter(lambda p: p.requires_grad, model.parameters()), **optimizer_params
+    )
 
     if rank == 0:
         logger.info("Using optimizer {}".format(optimizer))
 
-
-    lr_decay_lambda = lambda epoch: cfg['training']['scheduler']['lr_decay_rate'] ** (epoch // cfg['training']['scheduler']['lr_epoch_per_decay'])
+    lr_decay_lambda = lambda epoch: cfg["training"]["scheduler"]["lr_decay_rate"] ** (
+        epoch // cfg["training"]["scheduler"]["lr_epoch_per_decay"]
+    )
     scheduler = LambdaLR(optimizer, lr_lambda=lr_decay_lambda)
 
-
     # Setup Metrics
-    obj_running_metrics = IoU(cfg['model']['n_obj_classes'])
-    obj_running_metrics_val = IoU(cfg['model']['n_obj_classes'])
+    obj_running_metrics = IoU(cfg["model"]["n_obj_classes"])
+    obj_running_metrics_val = IoU(cfg["model"]["n_obj_classes"])
     obj_running_metrics.reset()
     obj_running_metrics_val.reset()
     val_loss_meter = averageMeter()
     time_meter = averageMeter()
-
 
     # setup Loss
     loss_fn = SemmapLoss()
@@ -126,7 +127,6 @@ def train(rank, world_size, cfg):
 
     if rank == 0:
         logger.info("Using loss {}".format(loss_fn))
-
 
     # init training
     start_iter = 0
@@ -136,10 +136,14 @@ def train(rank, world_size, cfg):
         if os.path.isfile(cfg["training"]["resume"]):
             if rank == 0:
                 logger.info(
-                    "Loading model and optimizer from checkpoint '{}'".format(cfg["training"]["resume"])
+                    "Loading model and optimizer from checkpoint '{}'".format(
+                        cfg["training"]["resume"]
+                    )
                 )
                 print(
-                    "Loading model and optimizer from checkpoint '{}'".format(cfg["training"]["resume"])
+                    "Loading model and optimizer from checkpoint '{}'".format(
+                        cfg["training"]["resume"]
+                    )
                 )
             checkpoint = torch.load(cfg["training"]["resume"], map_location="cpu")
             model_state = checkpoint["model_state"]
@@ -148,7 +152,7 @@ def train(rank, world_size, cfg):
             scheduler.load_state_dict(checkpoint["scheduler_state"])
             start_epoch = checkpoint["epoch"]
             start_iter = checkpoint["iter"]
-            best_iou = checkpoint['best_iou']
+            best_iou = checkpoint["best_iou"]
             if rank == 0:
                 logger.info(
                     "Loaded checkpoint '{}' (iter {})".format(
@@ -157,17 +161,26 @@ def train(rank, world_size, cfg):
                 )
         else:
             if rank == 0:
-                logger.info("No checkpoint found at '{}'".format(cfg["training"]["resume"]))
+                logger.info(
+                    "No checkpoint found at '{}'".format(cfg["training"]["resume"])
+                )
                 print("No checkpoint found at '{}'".format(cfg["training"]["resume"]))
 
-    elif cfg['training']['load_model'] is not None:
+    elif cfg["training"]["load_model"] is not None:
         checkpoint = torch.load(cfg["training"]["load_model"], map_location="cpu")
-        model_state = checkpoint['model_state']
+        model_state = checkpoint["model_state"]
         model.load_state_dict(model_state)
         if rank == 0:
-            logger.info("Loading model and optimizer from checkpoint '{}'".format(cfg["training"]["load_model"]))
-            print("Loading model and optimizer from checkpoint '{}'".format(cfg["training"]["load_model"]))
-
+            logger.info(
+                "Loading model and optimizer from checkpoint '{}'".format(
+                    cfg["training"]["load_model"]
+                )
+            )
+            print(
+                "Loading model and optimizer from checkpoint '{}'".format(
+                    cfg["training"]["load_model"]
+                )
+            )
 
     # start training
     iter = start_iter
@@ -195,7 +208,7 @@ def train(rank, world_size, cfg):
 
                 optimizer.step()
 
-                semmap_pred = semmap_pred.permute(0,2,3,1)
+                semmap_pred = semmap_pred.permute(0, 2, 3, 1)
 
                 masked_semmap_gt = semmap_gt[observed_masks]
                 masked_semmap_pred = semmap_pred[observed_masks]
@@ -206,7 +219,7 @@ def train(rank, world_size, cfg):
 
             time_meter.update(time.time() - start_ts)
 
-            if (iter % cfg["training"]["print_interval"] == 0):
+            if iter % cfg["training"]["print_interval"] == 0:
                 conf_metric = obj_running_metrics.conf_metric.conf
                 conf_metric = torch.FloatTensor(conf_metric)
                 conf_metric = conf_metric.to(device)
@@ -214,10 +227,10 @@ def train(rank, world_size, cfg):
                 distrib.all_reduce(loss)
                 loss /= world_size
 
-                if (rank ==0):
+                if rank == 0:
                     conf_metric = conf_metric.cpu().numpy()
                     conf_metric = conf_metric.astype(np.int32)
-                    tmp_metrics = IoU(cfg['model']['n_obj_classes'])
+                    tmp_metrics = IoU(cfg["model"]["n_obj_classes"])
                     tmp_metrics.reset()
                     tmp_metrics.conf_metric.conf = conf_metric
                     _, mIoU, acc, _, mRecall, _, mPrecision = tmp_metrics.value()
@@ -250,16 +263,20 @@ def train(rank, world_size, cfg):
 
                 features, masks_inliers, proj_indices, semmap_gt, _ = batch_val
 
-                semmap_pred, observed_masks = model(features, proj_indices, masks_inliers)
+                semmap_pred, observed_masks = model(
+                    features, proj_indices, masks_inliers
+                )
 
                 if observed_masks.any():
 
-                    loss_val = loss_fn(semmap_gt.to(device), semmap_pred, observed_masks)
+                    loss_val = loss_fn(
+                        semmap_gt.to(device), semmap_pred, observed_masks
+                    )
 
-                    semmap_pred = semmap_pred.permute(0,2,3,1)
+                    semmap_pred = semmap_pred.permute(0, 2, 3, 1)
 
                     masked_semmap_gt = semmap_gt[observed_masks]
-                    masked_semmap_pred =semmap_pred[observed_masks]
+                    masked_semmap_pred = semmap_pred[observed_masks]
 
                     obj_gt_val = masked_semmap_gt
                     obj_pred_val = masked_semmap_pred.data.max(-1)[1]
@@ -287,10 +304,10 @@ def train(rank, world_size, cfg):
 
             conf_metric = conf_metric.cpu().numpy()
             conf_metric = conf_metric.astype(np.int32)
-            tmp_metrics = IoU(cfg['model']['n_obj_classes'])
+            tmp_metrics = IoU(cfg["model"]["n_obj_classes"])
             tmp_metrics.reset()
             tmp_metrics.conf_metric.conf = conf_metric
-            _, mIoU, acc, _, mRecall, _, mPrecision =tmp_metrics.value()
+            _, mIoU, acc, _, mRecall, _, mPrecision = tmp_metrics.value()
             writer.add_scalar("val_metrics/mIoU", mIoU, iter)
             writer.add_scalar("val_metrics/mRecall", mRecall, iter)
             writer.add_scalar("val_metrics/mPrecision", mPrecision, iter)
@@ -331,9 +348,8 @@ def train(rank, world_size, cfg):
                 "scheduler_state": scheduler.state_dict(),
                 "best_iou": best_iou,
             }
-            save_path = os.path.join(cfg['checkpoint_dir'],"ckpt_model.pkl")
+            save_path = os.path.join(cfg["checkpoint_dir"], "ckpt_model.pkl")
             torch.save(state, save_path)
-
 
         val_loss_meter.reset()
         obj_running_metrics_val.reset()
@@ -356,14 +372,14 @@ if __name__ == "__main__":
     with open(args.config) as fp:
         cfg = yaml.load(fp)
 
-    name_expe = cfg['name_experiment']
+    name_expe = cfg["name_experiment"]
 
     run_id = random.randint(1, 100000)
     logdir = os.path.join("runs", name_expe, str(run_id))
     chkptdir = os.path.join("checkpoints", name_expe, str(run_id))
 
-    cfg['checkpoint_dir'] = chkptdir
-    cfg['logdir'] = logdir
+    cfg["checkpoint_dir"] = chkptdir
+    cfg["logdir"] = logdir
 
     print("RUNDIR: {}".format(logdir))
     Path(logdir).mkdir(parents=True, exist_ok=True)
@@ -372,8 +388,5 @@ if __name__ == "__main__":
     print("CHECKPOINTDIR: {}".format(chkptdir))
     Path(chkptdir).mkdir(parents=True, exist_ok=True)
 
-    world_size=8
-    mp.spawn(train,
-             args=(world_size, cfg),
-             nprocs=world_size,
-             join=True)
+    world_size = 8
+    mp.spawn(train, args=(world_size, cfg), nprocs=world_size, join=True)
