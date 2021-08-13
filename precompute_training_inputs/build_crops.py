@@ -84,7 +84,7 @@ for n, file in tqdm(enumerate(files), total=len(files)):
     camera_y = camera_y.unsqueeze(-1).unsqueeze(-1).repeat(1, pixels_in_map.shape[1], pixels_in_map.shape[2])
     above_threshold_z_indices = projection_indices[:,:,:,1] > camera_y + z_clip
 
-    masks_outliers = ~masks_outliers + outside_map_indices + above_threshold_z_indices
+    masks_outliers = masks_outliers + outside_map_indices + above_threshold_z_indices
 
     masks_inliers = ~masks_outliers
 

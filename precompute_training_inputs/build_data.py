@@ -143,7 +143,7 @@ for env, path in tqdm(paths.items()):
                                    sensor_pos[1],
                                    sensor_pos[2],
                                    heading,
-                                   elevation]])
+                                   elevation + np.pi]])
                 xyzhe = torch.FloatTensor(xyzhe).to(device)
                 T = _transform3D(xyzhe, device=device)
 
