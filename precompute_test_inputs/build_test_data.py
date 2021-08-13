@@ -17,6 +17,7 @@ from projector.projector import Projector
 from utils.habitat_utils import HabitatUtils
 
 output_dir = "data/test_data/projections/"
+os.makedirs(output_dir, exist_ok=True)
 
 device = torch.device("cuda")
 
