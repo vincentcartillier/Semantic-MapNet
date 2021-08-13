@@ -18,7 +18,6 @@ from semseg.rednet import RedNet
 from utils import convert_weights_cuda_cpu
 from utils.habitat_utils import HabitatUtils
 
-
 output_dir = "data/test_data/features/"
 os.makedirs(output_dir, exist_ok=True)
 
