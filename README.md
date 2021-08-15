@@ -55,7 +55,10 @@ run the following script for demo:
         python precompute_test_inputs/build_test_data_features.py
 
 
- * To evaluate SMNet you can run ```test.py```
+ * To evaluate SMNet you can run ```test.py``` and:
+
+        python eval/eval.py
+        python eval/eval_bfscore.py
 
 
 ## Pre-trained models
