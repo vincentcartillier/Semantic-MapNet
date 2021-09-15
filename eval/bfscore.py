@@ -1,8 +1,9 @@
-import cv2
-import numpy as np
 import math
 
-major = cv2.__version__.split('.')[0]     # Get opencv version
+import cv2
+import numpy as np
+
+major = cv2.__version__.split(".")[0]  # Get opencv version
 bDebug = False
 
 
@@ -19,16 +20,17 @@ def calc_precision_recall(contours_a, contours_b, threshold):
 
             # find the nearest distance
             for a in range(len(contours_a)):
-                dist = (contours_a[a][0] - contours_b[b][0]) * \
-                    (contours_a[a][0] - contours_b[b][0])
-                dist = dist + \
-                    (contours_a[a][1] - contours_b[b][1]) * \
-                    (contours_a[a][1] - contours_b[b][1])
-                if dist < threshold*threshold:
+                dist = (contours_a[a][0] - contours_b[b][0]) * (
+                    contours_a[a][0] - contours_b[b][0]
+                )
+                dist = dist + (contours_a[a][1] - contours_b[b][1]) * (
+                    contours_a[a][1] - contours_b[b][1]
+                )
+                if dist < threshold * threshold:
                     top_count = top_count + 1
                     break
 
-        precision_recall = top_count/len(contours_b)
+        precision_recall = top_count / len(contours_b)
     except Exception as e:
         precision_recall = 0
 
@@ -40,50 +42,48 @@ def calc_precision_recall(contours_a, contours_b, threshold):
 
 def bfscore(pr_, gt_, nb_classes, threshold=2):
 
-    #gt__ = cv2.imread(gtfile)    # Read GT segmentation
-    #gt_ = cv2.cvtColor(gt__, cv2.COLOR_BGR2GRAY)    # Convert color space
+    # gt__ = cv2.imread(gtfile)    # Read GT segmentation
+    # gt_ = cv2.cvtColor(gt__, cv2.COLOR_BGR2GRAY)    # Convert color space
 
-    #pr_ = cv2.imread(prfile)    # Read predicted segmentation
-    #pr_ = cv2.cvtColor(pr_, cv2.COLOR_BGR2GRAY)    # Convert color space
+    # pr_ = cv2.imread(prfile)    # Read predicted segmentation
+    # pr_ = cv2.cvtColor(pr_, cv2.COLOR_BGR2GRAY)    # Convert color space
 
-    #classes_gt = np.unique(gt_)    # Get GT classes
-    #classes_pr = np.unique(pr_)    # Get predicted classes
+    # classes_gt = np.unique(gt_)    # Get GT classes
+    # classes_pr = np.unique(pr_)    # Get predicted classes
 
     ## Check classes from GT and prediction
-    #if not np.array_equiv(classes_gt, classes_pr):
+    # if not np.array_equiv(classes_gt, classes_pr):
     #    print('Classes are not same! GT:', classes_gt, 'Pred:', classes_pr)
 
     #    classes = np.concatenate((classes_gt, classes_pr))
     #    classes = np.unique(classes)
     #    classes = np.sort(classes)
     #    print('Merged classes :', classes)
-    #else:
+    # else:
     #    print('Classes :', classes_gt)
     #    classes = classes_gt    # Get matched classes
-    
-    classes = np.arange(nb_classes) 
 
-    m = np.max(classes)    # Get max of classes (number of classes)
+    classes = np.arange(nb_classes)
+
+    m = np.max(classes)  # Get max of classes (number of classes)
     # Define bfscore variable (initialized with zeros)
-    bfscores = np.zeros((m+1), dtype=float)
+    bfscores = np.zeros((m + 1), dtype=float)
     areas_gt = np.zeros((m + 1), dtype=float)
 
-    for i in range(m+1):
+    for i in range(m + 1):
         bfscores[i] = np.nan
         areas_gt[i] = np.nan
 
+    precision_numerator = np.zeros((m + 1), dtype=float)
+    precision_denominator = np.zeros((m + 1), dtype=float)
+    recall_numerator = np.zeros((m + 1), dtype=float)
+    recall_denominator = np.zeros((m + 1), dtype=float)
 
-    precision_numerator = np.zeros((m+1), dtype=float)
-    precision_denominator = np.zeros((m+1), dtype=float)
-    recall_numerator = np.zeros((m+1), dtype=float)
-    recall_denominator = np.zeros((m+1), dtype=float)
+    for target_class in classes:  # Iterate over classes
 
-
-    for target_class in classes:    # Iterate over classes
-
-        if target_class == 0:     # Skip background
+        if target_class == 0:  # Skip background
             continue
-        
+
         if bDebug:
             print(">>> Calculate for class:", target_class)
 
@@ -91,12 +91,14 @@ def bfscore(pr_, gt_, nb_classes, threshold=2):
         gt[gt != target_class] = 0
 
         # contours는 point의 list형태.
-        if major == '3':    # For opencv version 3.x
+        if major == "3":  # For opencv version 3.x
             _, contours, _ = cv2.findContours(
-                gt, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)    # Find contours of the shape
-        else:    # For other opencv versions
+                gt, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE
+            )  # Find contours of the shape
+        else:  # For other opencv versions
             contours, _ = cv2.findContours(
-                gt, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)  # Find contours of the shape
+                gt, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE
+            )  # Find contours of the shape
 
         # contours 는 list of numpy arrays
         contours_gt = []
@@ -104,7 +106,7 @@ def bfscore(pr_, gt_, nb_classes, threshold=2):
             for j in range(len(contours[i])):
                 contours_gt.append(contours[i][j][0].tolist())
         if bDebug:
-            print('contours_gt')
+            print("contours_gt")
             print(contours_gt)
 
         # Get contour area of GT
@@ -124,12 +126,10 @@ def bfscore(pr_, gt_, nb_classes, threshold=2):
         pr[pr != target_class] = 0
 
         # contours는 point의 list형태.
-        if major == '3':    # For opencv version 3.x
-            _, contours, _ = cv2.findContours(
-                pr, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
-        else:    # For other opencv versions
-            contours, _ = cv2.findContours(
-                pr, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+        if major == "3":  # For opencv version 3.x
+            _, contours, _ = cv2.findContours(pr, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+        else:  # For other opencv versions
+            contours, _ = cv2.findContours(pr, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
         # contours 는 list of numpy arrays
         contours_pr = []
@@ -138,7 +138,7 @@ def bfscore(pr_, gt_, nb_classes, threshold=2):
                 contours_pr.append(contours[i][j][0].tolist())
 
         if bDebug:
-            print('contours_pr')
+            print("contours_pr")
             print(contours_pr)
 
         # Draw predicted contours
@@ -147,14 +147,16 @@ def bfscore(pr_, gt_, nb_classes, threshold=2):
 
         # 3. calculate
         precision, numerator, denominator = calc_precision_recall(
-            contours_gt, contours_pr, threshold)    # Precision
+            contours_gt, contours_pr, threshold
+        )  # Precision
         precision_numerator[target_class] = numerator
         precision_denominator[target_class] = denominator
         if bDebug:
             print("\tprecision:", precision, denominator, numerator)
 
         recall, numerator, denominator = calc_precision_recall(
-            contours_pr, contours_gt, threshold)    # Recall
+            contours_pr, contours_gt, threshold
+        )  # Recall
         recall_numerator[target_class] = numerator
         recall_denominator[target_class] = denominator
         if bDebug:
@@ -162,28 +164,34 @@ def bfscore(pr_, gt_, nb_classes, threshold=2):
 
         f1 = 0
         try:
-            f1 = 2*recall*precision/(recall + precision)    # F1 score
+            f1 = 2 * recall * precision / (recall + precision)  # F1 score
         except:
             f1 = np.nan
         if bDebug:
             print("\tf1:", f1)
         bfscores[target_class] = f1
 
-
     cv2.destroyAllWindows()
 
-    return bfscores[1:], areas_gt[1:], precision_numerator[1:], precision_denominator[1:], recall_numerator[1:], recall_denominator[1:]    # Return bfscores, except for background
+    return (
+        bfscores[1:],
+        areas_gt[1:],
+        precision_numerator[1:],
+        precision_denominator[1:],
+        recall_numerator[1:],
+        recall_denominator[1:],
+    )  # Return bfscores, except for background
 
 
 if __name__ == "__main__":
 
-    sample_gt = 'data/gt_1.png'
+    sample_gt = "data/gt_1.png"
     # sample_gt = 'data/gt_0.png'
 
-    sample_pred = 'data/crf_1.png'
+    sample_pred = "data/crf_1.png"
     # sample_pred = 'data/pred_0.png'
 
-    score, areas_gt = bfscore(sample_gt, sample_pred, 2)    # Same classes
+    score, areas_gt = bfscore(sample_gt, sample_pred, 2)  # Same classes
     # score, areas_gt = bfscore(sample_gt, sample_pred, 2)    # Different classes
 
     # gt_shape = cv2.imread('data/gt_1.png').shape
@@ -205,4 +213,4 @@ if __name__ == "__main__":
 
     print("\n>>>>Weighted BFscore:\n")
     print("Weighted-BFSCORE:", fw_bfscore)
-    print("Per image Weighted-BFscore:", np.nansum(fw_bfscore)/total_area)
+    print("Per image Weighted-BFscore:", np.nansum(fw_bfscore) / total_area)

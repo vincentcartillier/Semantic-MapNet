@@ -6,8 +6,7 @@ from habitat import get_config
 from habitat.sims import make_sim
 from habitat.utils.visualizations import maps
 
-from .semantic_utils import (object_whitelist, replica_to_mp3d_12cat_mapping,
-                             use_fine)
+from .semantic_utils import object_whitelist, replica_to_mp3d_12cat_mapping, use_fine
 
 
 class HabitatUtils:
