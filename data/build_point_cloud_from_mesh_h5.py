@@ -99,7 +99,7 @@ vertices_color = np.array(vertices_color)
 vertices_semantic_id = np.array(vertices_semantic_id)
 vertices_instance_id = np.array(vertices_instance_id)
 
-filename = 'data/object_point_clouds/{}.ply'.format(env)
+filename = 'data/object_point_clouds/{}.h5'.format(env)
 with h5py.File(filename, 'w') as f:
     f.create_dataset('vertices', data=vertices, dtype=np.float32)
     f.create_dataset('colors', data=vertices_color)
