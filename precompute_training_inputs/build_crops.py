@@ -3,6 +3,11 @@ import json
 import h5py
 import torch
 import numpy as np
+
+import sys
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(BASE_DIR, '../'))
+
 from utils.crop_memories import crop_memories
 
 from torch_scatter import scatter_add
@@ -13,6 +18,9 @@ data_dir = 'data/training/smnet_training_data'
 
 sample_semmap_output_dir = 'data/training/smnet_training_data_semmap'
 sample_indices_output_dir = 'data/training/smnet_training_data_indices'
+
+os.makedirs(sample_indices_output_dir, exist_ok=True)
+os.makedirs(sample_semmap_output_dir, exist_ok=True)
 
 semmap_info = json.load(open('data/semmap_GT_info.json', 'r'))
 
@@ -31,7 +39,7 @@ semantic_maps = np.zeros((len(files), 250, 250), dtype=np.int32)
 instance_maps = np.zeros((len(files), 250, 250), dtype=np.int32)
 observed_masks = np.zeros((len(files), 250, 250), dtype=np.bool)
 semantic_maps_env_names = []
-for n, file in tqdm(enumerate(files)):
+for n, file in tqdm(enumerate(files), total=len(files)):
 
     house, level, _ = file.split('_')
     env = '_'.join((house, level))
@@ -76,7 +84,7 @@ for n, file in tqdm(enumerate(files)):
     camera_y = camera_y.unsqueeze(-1).unsqueeze(-1).repeat(1, pixels_in_map.shape[1], pixels_in_map.shape[2])
     above_threshold_z_indices = projection_indices[:,:,:,1] > camera_y + z_clip
 
-    masks_outliers = ~masks_outliers + outside_map_indices + above_threshold_z_indices
+    masks_outliers = masks_outliers + outside_map_indices + above_threshold_z_indices
 
     masks_inliers = ~masks_outliers
 

@@ -30,8 +30,8 @@ run the following script for demo:
 
 ## Data
  * ```data/paths.json``` has all the manually recorded trajectories.
- * The semantic dense point cloud of objects with cleaned floor labels are available here: https://gatech.box.com/s/8jpio3o4u054dzv4ifc1ueagtk4loizp. Place those under ```data/object_point_clouds/```
- * Ground truth top-down semantic maps are available here: https://gatech.box.com/s/ylpyjhhmyftq38umm7xojllgscuej6id. Place those under ```data/semmap/```
+ * The semantic dense point cloud of objects with cleaned floor labels are available here: https://drive.google.com/drive/folders/1Fwbq7Bvl4kIjJ-YOJNbYWHD_6Gh8lFwQ?usp=sharing. Place those under ```data/object_point_clouds/```. If you are looking to recompute those point clouds you can run ```data/build_point_cloud_from_mesh.py``` (will output a .ply file) or ```data/build_point_cloud_from_mesh_h5.py``` (will output a .h5 file / useful to compute the GT topdown map).
+ * Ground truth top-down semantic maps are available here: https://drive.google.com/drive/folders/1aM9vfDckY6K81mrVhVLmEX5rKZ2B1Q5r?usp=sharing. Place those under ```data/semmap/```
  * Place the [Matterport3D](https://niessner.github.io/Matterport/) data under ```data/mp3d/```
 
 ## Workflow
@@ -55,17 +55,21 @@ run the following script for demo:
         python precompute_test_inputs/build_test_data_features.py
 
 
- * To evaluate SMNet you can run ```test.py```
+ * To evaluate SMNet you can run ```test.py``` and:
+
+        python eval/eval.py
+        python eval/eval_bfscore.py
 
 
 ## Pre-trained models
- * pretrained weights are available here: https://gatech.box.com/s/yazgr05tavh1nsdydyl5g3weyli68who
- * pretrained weights for RedNet are available here: https://gatech.box.com/s/7u58mgthx3l98hrkignthm7096y1b3fl
+ * pretrained weights are available here: https://drive.google.com/file/d/1KsJoTs91ez2bR35wW1VlD8jBG_gB-k7a/view?usp=sharing
+ * pretrained weights for RedNet are available here: https://drive.google.com/file/d/1PZDwl6dmIl6bhmWG42aRGyghgQQWTOcz/view?usp=sharing
 
 
 ## Object-Goal Navigation
  * Download the [ObjectNav-Challenge-data](https://github.com/facebookresearch/habitat-lab) and place it under: ```data/ObjectNav/objectnav_mp3d_v1/val/```
- * Download the precomputed topdown semantic map predictions here: https://gatech.box.com/s/sum8amlrso0ngrdl5s7ek3hfkrkp3u15 and place them in ```data/ObjectNav/semmap/```
+ * Download the precomputed topdown semantic map predictions here: https://drive.google.com/file/d/1wPtJaoDO15OtPcWcXuAbCtGQ3r-MdQM2/view?usp=sharing and place them in ```data/ObjectNav/semmap/```
+ * Download the precomputed ObjNav GT goals here: https://drive.google.com/file/d/1Y6Qb6eGryZNkbjWGiqQJE2k-zV0aArrd/view?usp=sharing and place the json file in ```data/ObjectNav/```
  * You can recompute the semantic predictions using the explorations paths in ```data/ObjectNav/paths.json``` and the ```test.py``` script.
  * Compute the freespace maps:
 

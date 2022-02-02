@@ -3,6 +3,7 @@ import json
 import h5py
 import numpy as np
 import torch
+from tqdm import tqdm
 from torch_scatter import scatter_max
 
 from multiprocessing import Pool
@@ -13,6 +14,8 @@ output_name = 'smnet_training_data_maxHIndices'
 output_root = 'data/training'
 output_dir = os.path.join(output_root, 
                           output_name)
+os.makedirs(output_dir, exist_ok=True)
+
 files = os.listdir(input_dir)
 
 device = torch.device('cpu')
@@ -22,7 +25,7 @@ def get_projections_indices(file):
     point_clouds = np.array(h5file['projection_indices'])
     heights = point_clouds[:,:,:,1]
     h5file.close()
-    
+
     h5file = h5py.File(os.path.join('data/training/smnet_training_data_indices', file), 'r')
     proj_indices = np.array(h5file['indices'])
     masks_outliers = np.array(h5file['masks_outliers'])
@@ -89,7 +92,7 @@ for split in ['train', 'val']:
     projection_indices = []
     projection_masks = []
     projection_indices_envs = []
-    for file in files:
+    for file in tqdm(files):
         name = file.split('.')[0]
         env = '_'.join(name.split('_')[:2])
         if env in envs_splits['{}_envs'.format(split)]:

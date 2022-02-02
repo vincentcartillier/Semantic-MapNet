@@ -16,6 +16,7 @@ from scipy.spatial.transform import Rotation as R
 
 
 output_dir = 'data/test_data/projections/'
+os.makedirs(output_dir, exist_ok=True)
 
 device = torch.device('cuda')
 
