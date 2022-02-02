@@ -76,6 +76,10 @@ run the following script for demo:
         python ObjectNav/run_astar_planning.py
 
 
+## Replica
+ * You can find the manually generated path related to the replica experiment at ```data_replica/paths.json```
+
+
 ## Citation
 
 If you find our work useful in your research, please consider citing:
