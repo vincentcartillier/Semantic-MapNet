@@ -246,12 +246,16 @@ class HabitatUtils:
         # /!\ /!\ level IDs are noisy in MP3D
         # /!\ /!\
 
-        assert self.level == int(self.semantic_annotations.levels[self.level].id)
+        if self.housetype == 'mp3d':
 
-        objects = {}
-        for region in self.semantic_annotations.levels[self.level].regions:
-            for object in region.objects:
-                objects[int(object.id.split('_')[-1])] = object
+            assert self.level == int(self.semantic_annotations.levels[self.level].id)
+
+            objects = {}
+            for region in self.semantic_annotations.levels[self.level].regions:
+                for object in region.objects:
+                    objects[int(object.id.split('_')[-1])] = object
+        else:
+            objects = self.all_objects
 
         return objects
 
